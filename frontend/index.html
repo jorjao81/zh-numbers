@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chinese Numbers Practice</title>
+</head>
+<body>
+    <h1>Chinese Numbers Practice</h1>
+    <div>
+        <button id="next">Next Number</button>
+        <p id="number"></p>
+        <p id="text"></p>
+    </div>
+    <div>
+        <button id="start">Start Recording</button>
+        <button id="stop" disabled>Stop Recording</button>
+    </div>
+    <p id="result"></p>
+    <script>
+    const nextBtn = document.getElementById('next');
+    const numberEl = document.getElementById('number');
+    const textEl = document.getElementById('text');
+    const startBtn = document.getElementById('start');
+    const stopBtn = document.getElementById('stop');
+    const resultEl = document.getElementById('result');
+    let currentNumber = null;
+    let mediaRecorder;
+    let chunks = [];
+
+    async function fetchNumber() {
+        const res = await fetch('/api/number');
+        const data = await res.json();
+        currentNumber = data.number;
+        numberEl.textContent = data.number;
+        textEl.textContent = data.text;
+        resultEl.textContent = '';
+    }
+
+    nextBtn.addEventListener('click', fetchNumber);
+
+    startBtn.addEventListener('click', async () => {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = e => chunks.push(e.data);
+        mediaRecorder.onstop = sendAudio;
+        mediaRecorder.start();
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+    });
+
+    stopBtn.addEventListener('click', () => {
+        mediaRecorder.stop();
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+    });
+
+    async function sendAudio() {
+        const blob = new Blob(chunks, { type: 'audio/webm' });
+        chunks = [];
+        const form = new FormData();
+        form.append('number', currentNumber);
+        form.append('audio', blob, 'recording.webm');
+        const res = await fetch('/api/assess', { method: 'POST', body: form });
+        const data = await res.json();
+        resultEl.textContent = `Accuracy: ${data.accuracy.toFixed(2)}`;
+    }
+
+    fetchNumber();
+    </script>
+</body>
+</html>
