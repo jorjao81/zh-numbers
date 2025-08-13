@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chinese Number Pronunciation Practice</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Learn Chinese Numbers</h1>
+        <p>Press "Record" and pronounce the number shown below.</p>
+
+        <div class="number-display" id="number-display">
+            <!-- Number will be loaded here -->
+            <span class="spinner"></span>
+        </div>
+
+        <div class="chinese-char" id="chinese-char">
+            <!-- Chinese characters will be loaded here -->
+        </div>
+
+        <button id="record-button">Record</button>
+        <button id="stop-button" disabled>Stop</button>
+
+        <div id="result-display" class="result">
+            <!-- Pronunciation assessment results will be shown here -->
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
